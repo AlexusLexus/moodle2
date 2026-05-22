@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестирование | СЭО ВятГУ</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .test-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 24px 15px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .test-layout {
+            display: block;
+        }
+        
+        .test-layout::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .questions-column {
+            float: left;
+            width: 73%;
+            padding-right: 24px;
+            box-sizing: border-box;
+        }
+
+        .navigation-column {
+            float: right;
+            width: 27%;
+            box-sizing: border-box;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .question-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .answers-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-option {
+            display: block;
+            position: relative;
+            padding: 14px 16px 14px 45px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.4;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .answer-option:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .answer-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            height: 18px;
+            width: 18px;
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            transition: all 0.15s ease;
+        }
+
+        .answer-option input:checked ~ .checkmark {
+            border-color: #0284c7;
+            background-color: #0284c7;
+        }
+
+        .checkmark::after {
+            content: "";
+            position: absolute;
+            display: none;
+            top: 4px;
+            left: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffffff;
+        }
+
+        .answer-option input:checked ~ .checkmark::after {
+            display: block;
+        }
+
+        .answer-option.selected-active {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+            color: #0369a1;
+        }
+
+        .nav-sticky-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            position: sticky;
+            top: 20px;
+        }
+
+        .timer-box {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .grid-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .grid-item:hover {
+            background: #e2e8f0;
+        }
+
+        .grid-item.current {
+            border: 2px solid #0284c7;
+            color: #0284c7;
+            background: #ffffff;
+        }
+
+        .grid-item.answered {
+            background: #cbd5e1;
+            border-color: #94a3b8;
+            color: #1e293b;
+        }
+
+        .btn-finish-test {
+            display: block;
+            width: 100%;
+            background: #dc2626;
+            color: #ffffff;
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .btn-finish-test:hover {
+            background: #b91c1c;
+        }
+
+        .bottom-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 50px;
+        }
+
+        .btn-nav-step {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #94a3b8;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-toolbar">
+        <div class="toolbar-left">
+            <span class="brand-name">Система электронного образования ВятГУ</span>
+        </div>
+    </header>
+
+    <div class="test-container">
+        
+        <div style="margin-bottom: 25px;">
+            <h1 style="font-size: 22px; color: #0f172a; font-weight: 700; margin-bottom: 4px;">
+                Тест №1. Основные понятия и конвейерная обработка
+            </h1>
+            <p style="font-size: 14px; color: #64748b;">
+                Курс: Аппаратные средства вычислительной техники
+            </p>
+        </div>
+
+        <div class="test-layout">
+            
+            <main class="questions-column">
+                <form id="quizForm">
+                    
+                    <div class="question-card" id="q1">
+                        <div class="question-meta">Вопрос 1 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какой из узлов типовой микропроцессорной системы (МПС) отвечает за формирование последовательности периодических импульсов, задающих временной такт работы центрального процессора и системной шины?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question1" value="a" onchange="markAnswered(1)">
+                                <span class="checkmark"></span>
+                                а. Логика управления шиной
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question1" value="b" onchange="markAnswered(1)">
+                                <span class="checkmark"></span>
+                                б. Модуль оперативной памяти (ОЗУ)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question1" value="c" onchange="markAnswered(1)">
+                                <span class="checkmark"></span>
+                                в. Генератор синхронизации
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q2">
+                        <div class="question-meta">Вопрос 2 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Как в конвейерной обработке информации называются ситуации, которые ломают линейный такт и препятствуют выполнению очередной команды в предназначенное для неё время?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question2" value="a" onchange="markAnswered(2)">
+                                <span class="checkmark"></span>
+                                а. Аппаратные прерывания ввода-вывода
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question2" value="b" onchange="markAnswered(2)">
+                                <span class="checkmark"></span>
+                                б. Конфликты конвейера (структурные, по управлению, по данным)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question2" value="c" onchange="markAnswered(2)">
+                                <span class="checkmark"></span>
+                                в. Системные тактовые задержки генератора
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q3">
+                        <div class="question-meta">Вопрос 3 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какая архитектура вычислительных систем использует общую физическую область памяти как для хранения команд программ, так и для хранения операционных данных?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question3" value="a" onchange="markAnswered(3)">
+                                <span class="checkmark"></span>
+                                а. Архитектура Фон-Неймана
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question3" value="b" onchange="markAnswered(3)">
+                                <span class="checkmark"></span>
+                                б. Гарвардская архитектура
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question3" value="c" onchange="markAnswered(3)">
+                                <span class="checkmark"></span>
+                                в. Многопроцессорная NUMA-архитектура
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q4">
+                        <div class="question-meta">Вопрос 4 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какая стадия стандартного операционного конвейера ЦП обозначается аббревиатурой «WB»?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question4" value="a" onchange="markAnswered(4)">
+                                <span class="checkmark"></span>
+                                а. Instruction Fetch (Выборка команды)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question4" value="b" onchange="markAnswered(4)">
+                                <span class="checkmark"></span>
+                                б. Executing (Выполнение операции в АЛУ)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question4" value="c" onchange="markAnswered(4)">
+                                <span class="checkmark"></span>
+                                в. Write Back (Запись полученного результата в регистры)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q5">
+                        <div class="question-meta">Вопрос 5 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            В каком году был выпущен первый в мире 4-разрядный коммерческий микропроцессор Intel 4004?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question5" value="a" onchange="markAnswered(5)">
+                                <span class="checkmark"></span>
+                                а. 1971 г.
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question5" value="b" onchange="markAnswered(5)">
+                                <span class="checkmark"></span>
+                                б. 1974 г.
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question5" value="c" onchange="markAnswered(5)">
+                                <span class="checkmark"></span>
+                                в. 1982 г.
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q6">
+                        <div class="question-meta">Вопрос 6 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Согласно иерархической лестнице уровней микропроцессорных систем, к какому уровню относится «Архитектура набора команд» (ISA)?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question6" value="a" onchange="markAnswered(6)">
+                                <span class="checkmark"></span>
+                                а. Уровень 1
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question6" value="b" onchange="markAnswered(6)">
+                                <span class="checkmark"></span>
+                                б. Уровень 2
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question6" value="c" onchange="markAnswered(6)">
+                                <span class="checkmark"></span>
+                                в. Уровень 3
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q7">
+                        <div class="question-meta">Вопрос 7 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какое из следующих устройств НЕ входит в состав классического ядра центрального процессора (ЦП)?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question7" value="a" onchange="markAnswered(7)">
+                                <span class="checkmark"></span>
+                                а. Арифметико-логическое устройство (АЛУ)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question7" value="b" onchange="markAnswered(7)">
+                                <span class="checkmark"></span>
+                                б. Внешнее постоянное запоминающее устройство (ПЗУ)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question7" value="c" onchange="markAnswered(7)">
+                                <span class="checkmark"></span>
+                                в. Блок регистров общего назначения и счетчик команд
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q8">
+                        <div class="question-meta">Вопрос 8 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какое функциональное назначение имеет счетчик команд (Instruction Pointer / Program Counter) в структуре процессора?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question8" value="a" onchange="markAnswered(8)">
+                                <span class="checkmark"></span>
+                                а. Хранит код операции текущей выполняемой команды
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question8" value="b" onchange="markAnswered(8)">
+                                <span class="checkmark"></span>
+                                б. Адресует и указывает на следующую команду, подлежащую выборке из памяти
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question8" value="c" onchange="markAnswered(8)">
+                                <span class="checkmark"></span>
+                                в. Подсчитывает общее количество тактов с момента сброса системы
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q9">
+                        <div class="question-meta">Вопрос 9 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какая микросхема в семействе КР580 представляет собой программируемый последовательный интерфейс?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question9" value="a" onchange="markAnswered(9)">
+                                <span class="checkmark"></span>
+                                а. КР580ВВ51А
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question9" value="b" onchange="markAnswered(9)">
+                                <span class="checkmark"></span>
+                                б. КР580ВИ53
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question9" value="c" onchange="markAnswered(9)">
+                                <span class="checkmark"></span>
+                                в. КР580ВН59
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q10">
+                        <div class="question-meta">Вопрос 10 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Из каких базовых стадий состоит классический цикл тракта данных при обработке одной микрокоманды?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question10" value="a" onchange="markAnswered(10)">
+                                <span class="checkmark"></span>
+                                а. Сброс регистров, модуляция, демультиплексирование
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question10" value="b" onchange="markAnswered(10)">
+                                <span class="checkmark"></span>
+                                б. Выборка операндов из регистров, выполнение операции в АЛУ, запись результата обратно в регистры
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question10" value="c" onchange="markAnswered(10)">
+                                <span class="checkmark"></span>
+                                в. Передача по системной шине, генерация прерывания, буферизация данных
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q11">
+                        <div class="question-meta">Вопрос 11 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Какая стадия конвейера отвечает за определение типа вызванной команды и выяснение того, какие операнды из памяти или регистров ей требуются?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question11" value="a" onchange="markAnswered(11)">
+                                <span class="checkmark"></span>
+                                а. IF (Instruction Fetch)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question11" value="b" onchange="markAnswered(11)">
+                                <span class="checkmark"></span>
+                                б. ID (Instruction Decode)
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question11" value="c" onchange="markAnswered(11)">
+                                <span class="checkmark"></span>
+                                в. EX (Executing)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q12">
+                        <div class="question-meta">Вопрос 12 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            При вычислении длительности такта конвейера, какой параметр помимо максимальной длительности отдельной стадии обязательно учитывается в формуле?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question12" value="a" onchange="markAnswered(12)">
+                                <span class="checkmark"></span>
+                                а. Количество регистров общего назначения
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question12" value="b" onchange="markAnswered(12)">
+                                <span class="checkmark"></span>
+                                б. Затраты времени, необходимые для записи промежуточных результатов в конвейерные регистры
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question12" value="c" onchange="markAnswered(12)">
+                                <span class="checkmark"></span>
+                                в. Глубина стека адресов возврата
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q13">
+                        <div class="question-meta">Вопрос 13 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            К какому типу конфликтов конвейера относится ситуация, когда две или более одновременно выполняющиеся команды пытаются использовать один и тот же аппаратный ресурс (например, один порт памяти)?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question13" value="a" onchange="markAnswered(13)">
+                                <span class="checkmark"></span>
+                                а. Конфликты по управлению
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question13" value="b" onchange="markAnswered(13)">
+                                <span class="checkmark"></span>
+                                б. Конфликты по данным
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question13" value="c" onchange="markAnswered(13)">
+                                <span class="checkmark"></span>
+                                в. Структурные конфликты
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q14">
+                        <div class="question-meta">Вопрос 14 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            Что является определением микропроцессора согласно лекционному курсу?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question14" value="a" onchange="markAnswered(14)">
+                                <span class="checkmark"></span>
+                                а. Программно управляемое устройство, предназначенное для обработки цифровой информации и управления процессом этой обработки, выполненное в виде одной или нескольких БИС
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question14" value="b" onchange="markAnswered(14)">
+                                <span class="checkmark"></span>
+                                б. Любая электронная плата с установленной на ней шиной адреса и шиной данных
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question14" value="c" onchange="markAnswered(14)">
+                                <span class="checkmark"></span>
+                                в. Автономное устройство сопряжения периферийных датчиков с сетью электропитания
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card" id="q15">
+                        <div class="question-meta">Вопрос 15 • Баллов: 1,00</div>
+                        <div class="question-text">
+                            В какой микроархитектуре команды условного и безусловного перехода могут вызывать конфликты конвейера, приводящие к необходимости сброса уже частично выбранных инструкций?
+                        </div>
+                        <div class="answers-group">
+                            <label class="answer-option">
+                                <input type="radio" name="question15" value="a" onchange="markAnswered(15)">
+                                <span class="checkmark"></span>
+                                а. Конфликты по управлению
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question15" value="b" onchange="markAnswered(15)">
+                                <span class="checkmark"></span>
+                                б. Конфликты по структуре памяти
+                            </label>
+                            <label class="answer-option">
+                                <input type="radio" name="question15" value="c" onchange="markAnswered(15)">
+                                <span class="checkmark"></span>
+                                в. Асинхронные логические сбои
+                            </label>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="bottom-actions">
+                    <button class="btn-nav-step" disabled>« Предыдущая</button>
+                    <button class="btn-nav-step" disabled>Следующая »</button>
+                </div>
+            </main>
+
+            <aside class="navigation-column">
+                <div class="nav-sticky-panel">
+                    
+                    <div class="timer-box">
+                        ⏱ Осталось времени: <span id="timerClock">45:00</span>
+                    </div>
+
+                    <div class="nav-title">Навигация по тесту</div>
+                    
+                    <div class="questions-grid">
+                        <a href="#q1" class="grid-item current" id="nav-item-1">1</a>
+                        <a href="#q2" class="grid-item" id="nav-item-2">2</a>
+                        <a href="#q3" class="grid-item" id="nav-item-3">3</a>
+                        <a href="#q4" class="grid-item" id="nav-item-4">4</a>
+                        <a href="#q5" class="grid-item" id="nav-item-5">5</a>
+                        <a href="#q6" class="grid-item" id="nav-item-6">6</a>
+                        <a href="#q7" class="grid-item" id="nav-item-7">7</a>
+                        <a href="#q8" class="grid-item" id="nav-item-8">8</a>
+                        <a href="#q9" class="grid-item" id="nav-item-9">9</a>
+                        <a href="#q10" class="grid-item" id="nav-item-10">10</a>
+                        <a href="#q11" class="grid-item" id="nav-item-11">11</a>
+                        <a href="#q12" class="grid-item" id="nav-item-12">12</a>
+                        <a href="#q13" class="grid-item" id="nav-item-13">13</a>
+                        <a href="#q14" class="grid-item" id="nav-item-14">14</a>
+                        <a href="#q15" class="grid-item" id="nav-item-15">15</a>
+                    </div>
+
+                    <a href="course.html" class="btn-finish-test" onclick="finishQuiz()">Закончить попытку...</a>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <script>
+        function markAnswered(questionNumber) {
+            const navItem = document.getElementById('nav-item-' + questionNumber);
+            if (navItem) {
+                navItem.classList.add('answered');
+            }
+
+            const questionCard = document.getElementById('q' + questionNumber);
+            const options = questionCard.querySelectorAll('.answer-option');
+            options.forEach(opt => {
+                const radio = opt.querySelector('input');
+                if (radio.checked) {
+                    opt.classList.add('selected-active');
+                } else {
+                    opt.classList.remove('selected-active');
+                }
+            });
+        }
+
+        let timeInSeconds = 45 * 60;
+        const timerElement = document.getElementById('timerClock');
+
+        const countdown = setInterval(() => {
+            let minutes = Math.floor(timeInSeconds / 60);
+            let seconds = timeInSeconds % 60;
+
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+
+            timerElement.textContent = minutes + ':' + seconds;
+
+            if (timeInSeconds <= 0) {
+                clearInterval(countdown);
+                alert('Время вышло! Результаты автоматически зафиксированы.');
+                window.location.href = 'course.html';
+            }
+            timeInSeconds--;
+        }, 1000);
+
+        function finishQuiz() {
+            //alert('Тест пройден!');
+        }
+    </script>
+
+</body>
+</html>
